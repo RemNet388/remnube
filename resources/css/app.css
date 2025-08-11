@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reducir altura de las filas */
+.table-sm td, .table-sm th {
+    padding: 0.4rem 0.5rem;
+}
+
+/* Rayado gris suave */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9 !important;
+}
+
+/* Mejorar alineación vertical */
+.table td, .table th {
+    vertical-align: middle;
+}
