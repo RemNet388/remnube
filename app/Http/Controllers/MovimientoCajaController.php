@@ -6,7 +6,7 @@ use App\Models\CajaDiaria;
 use App\Models\MovimientoCaja;
 use Illuminate\Http\Request;
 
-class CajaController extends Controller
+class MovimientoCajaCajaController extends Controller
 {
     public function index()
     {
