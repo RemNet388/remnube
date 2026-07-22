@@ -1,237 +1,360 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Nueva Compra</h1>
+<div class="container py-3">
+    <h3>Registrar Compra</h3>
 
-    @if ($errors->any())
+    @if($errors->any())
         <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
     @endif
 
-    <form action="{{ route('compras.store') }}" method="POST">
+    <form action="{{ route('compras.store') }}" method="POST" id="form-compra">
         @csrf
 
-        <!-- Fecha, proveedor y forma de pago -->
         <div class="row mb-3">
             <div class="col-md-4">
-                <label for="fecha" class="form-label">Fecha</label>
-                <input type="date" name="fecha" id="fecha" class="form-control form-control-sm" value="{{ date('Y-m-d') }}" required>
-            </div>
-            <div class="col-md-4">
-                <label for="proveedor_id" class="form-label">Proveedor</label>
-                <select name="proveedor_id" id="proveedor_id" class="form-control form-control-sm" required>
-                    <option value="">-- Seleccione --</option>
-                    @foreach($proveedores as $proveedor)
-                        <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
+                <label>Proveedor</label>
+                <select name="proveedor_id" class="form-select form-select-sm" required>
+                    <option value="">Seleccionar</option>
+                    @foreach($proveedores as $p)
+                        <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="col-md-4">
-                <label for="forma_pago_id" class="form-label">Forma de Pago</label>
-                <select name="forma_pago_id" id="forma_pago_id" class="form-control form-control-sm" required>
-                    <option value="">-- Seleccione --</option>
-                    @foreach($formasPago as $forma)
-                        <option value="{{ $forma->id }}">{{ $forma->nombre }}</option>
+                <label>Forma de pago</label>
+                <select name="forma_pago_id" class="form-select form-select-sm" required>
+                    <option value="">Seleccionar</option>
+                    @foreach($formasPago as $f)
+                        <option value="{{ $f->id }}">{{ $f->nombre }}</option>
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-4">
+                <label>Fecha</label>
+                <input type="date" name="fecha" class="form-control form-control-sm" value="{{ date('Y-m-d') }}" required>
+            </div>
+            <div class="col-md-4">
+                <label>Nro. Comprobante</label>
+                <input type="text" name="numero_comprobante" class="form-control form-control-sm" value="">
+            </div>            
         </div>
 
-        <!-- Buscador y botón modal -->
-        <div class="row mb-3">
-            <div class="col-md-9">
-                <label for="buscador" class="form-label">Buscar Producto</label>
-                <input type="text" id="buscador" class="form-control form-control-sm" placeholder="Escriba para buscar...">
-                <div id="resultados" class="list-group mt-1"></div>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalProducto">
-                    + Nuevo Producto
-                </button>
-            </div>
-        </div>
-
-        <table class="table table-bordered" id="tabla-productos">
-            <thead>
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
                 <tr>
                     <th>Producto</th>
                     <th>Cantidad</th>
                     <th>Precio compra</th>
                     <th>Subtotal</th>
-                    <th></th>
+                    <th>Acción</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="productos-body">
+                <tr class="fila-producto">
+<td style="position: relative;">
+    <div class="input-group input-group-sm">
+        <input type="text" class="form-control form-control-sm producto-buscar" placeholder="Buscar producto...">
+        <button type="button" class="btn btn-success btn-sm btn-nuevo-producto">+</button>
+    </div>
+    <input type="hidden" name="productos[0][id]" class="producto-id">
+    <div class="resultados position-absolute bg-white border w-100"></div>
+</td>
+
+                    <td><input type="number" name="productos[0][cantidad]" class="form-control form-control-sm cantidad" min="1" value="1"></td>
+                    <td><input type="number" name="productos[0][precio_compra]" class="form-control form-control-sm precio" step="0.01" value="0"></td>
+                    <td class="subtotal">$0.00</td>
+                    <td><button type="button" class="btn btn-danger btn-sm eliminar-fila">Eliminar</button></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td colspan="2" id="total-compra">$0.00</td>
+                </tr>
+            </tfoot>
         </table>
 
-        <h4>Total: $<span id="total">0.00</span></h4>
-
-        <button type="submit" class="btn btn-primary">Guardar Compra</button>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary btn-sm me-2" id="btn-guardar">Guardar Compra</button>
+            <a href="{{ route('compras.index') }}" class="btn btn-secondary btn-sm">Cancelar</a>
+        </div>
     </form>
 </div>
 
-<!-- Modal Nuevo Producto -->
-<div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="formNuevoProducto">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalProductoLabel">Nuevo Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Nombre</label>
-                        <input type="text" name="nombre" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Categoría</label>
-                        <select name="categoria_id" class="form-control form-control-sm" required>
-                            <option value="">-- Seleccione --</option>
-                            @foreach($categorias as $categoria)
-                                <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label>Precio compra</label>
-                        <input type="number" name="precio_compra" step="0.01" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Precio venta</label>
-                        <input type="number" name="precio_venta" step="0.01" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Stock inicial</label>
-                        <input type="number" name="stock" class="form-control form-control-sm" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </form>
+<!-- Modal nuevo producto -->
+ <div class="modal fade" id="modalNuevoProducto" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formNuevoProducto">
+        @csrf
+        <div class="modal-header">
+          <h5 class="modal-title">Nuevo Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <label>Nombre</label>
+            <input type="text" name="nombre" class="form-control" required>
+          </div>
+<div class="mb-3">
+    <label for="categoria_id" class="form-label">Categoría</label>
+    <select name="categoria_id" id="categoria_id" class="form-select" required>
+        <option value="">Seleccionar...</option>
+        @foreach ($categorias as $categoria)
+            <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+        @endforeach
+    </select>
+</div>          
+          <div class="mb-2">
+            <label>Precio compra</label>
+            <input type="number" name="precio_compra" class="form-control" step="0.01" required>
+          </div>
+          <div class="mb-2">
+            <label>Precio venta</label>
+            <input type="number" name="precio_venta" class="form-control" step="0.01" required>
+          </div>
+          <div class="mb-2">
+            <label>Stock inicial</label>
+            <input type="number" name="stock" class="form-control" value="0">
+          </div>
+          <div class="mb-2">
+            <label>Fecha Vencimiento</label>
+            <input type="date" name="fecha_vencimiento" class="form-control">
+          </div>          
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
-@endsection
+<style>
+    .resultados {
+    max-height: 200px;       /* altura máxima del dropdown */
+    overflow-y: auto;        /* scroll si hay muchos productos */
+    position: absolute;
+    top: 100%;               /* justo debajo del input */
+    left: 0;
+    width: 100%;
+    z-index: 1050;           /* encima de otros elementos */
+    background-color: #fff;  
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
 
+.resultados div {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.resultados div:hover {
+    background-color: #e9ecef;
+}
+</style>
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
-$(function(){
+document.addEventListener('DOMContentLoaded', function() {
 
-    // Buscar producto
-    $('#buscador').on('keyup', function(){
-        let q = $(this).val();
-        if(q.length < 2) {
-            $('#resultados').html('');
-            return;
-        }
-        $.get('{{ route("productos.buscar") }}', { q: q }, function(data){
-            let html = '';
-            data.forEach(prod => {
-                html += `<a href="#" class="list-group-item list-group-item-action seleccionar-producto"
-                             data-id="${prod.id}" data-nombre="${prod.nombre}" data-precio="${prod.precio_compra}">
-                             ${prod.nombre}
-                         </a>`;
-            });
-            $('#resultados').html(html);
-        });
-    });
+    let filaActual = null;
 
-    // Seleccionar producto
-    $(document).on('click', '.seleccionar-producto', function(e){
-        e.preventDefault();
-        let id = $(this).data('id');
-        let nombre = $(this).data('nombre');
-        let precio = $(this).data('precio') || 0;
+    const formCompra = document.getElementById('form-compra');
+    const btnGuardar = document.getElementById('btn-guardar');
 
-        agregarProductoTabla(id, nombre, precio);
-
-        $('#resultados').html('');
-        $('#buscador').val('');
-    });
-
-    // Función para agregar producto a la tabla
-    function agregarProductoTabla(id, nombre, precio){
-        if($(`#producto-${id}`).length) {
-            alert('Este producto ya está en la lista');
-            return;
-        }
-        $('#tabla-productos tbody').append(`
-            <tr id="producto-${id}">
-                <td>
-                    <input type="hidden" name="productos[${id}][id]" value="${id}">
-                    ${nombre}
-                </td>
-                <td><input type="number" name="productos[${id}][cantidad]" value="1" class="form-control form-control-sm cantidad "></td>
-                <td><input type="number" name="productos[${id}][precio_compra]" step="0.01" value="${precio}" class="form-control form-control-sm precio "></td>
-                <td class="subtotal">0.00</td>
-                <td><button type="button" class="btn btn-danger btn-sm eliminar">X</button></td>
-            </tr>
-        `);
-        calcularTotal();
-    }
-
-    // Cambiar cantidad o precio
-    $(document).on('input', '.cantidad, .precio', function(){
-        calcularTotal();
-    });
-
-    // Eliminar producto
-    $(document).on('click', '.eliminar', function(){
-        $(this).closest('tr').remove();
-        calcularTotal();
-    });
-
-    function calcularTotal(){
+    function actualizarTotales() {
         let total = 0;
-        $('#tabla-productos tbody tr').each(function(){
-            let cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
-            let precio = parseFloat($(this).find('.precio').val()) || 0;
-            let subtotal = cantidad * precio;
-            $(this).find('.subtotal').text(subtotal.toFixed(2));
+        document.querySelectorAll('#productos-body tr').forEach(fila => {
+            let cant = parseFloat(fila.querySelector('.cantidad').value) || 0;
+            let precio = parseFloat(fila.querySelector('.precio').value) || 0;
+            let subtotal = cant * precio;
+            fila.querySelector('.subtotal').textContent = '$' + subtotal.toFixed(2);
             total += subtotal;
         });
-        $('#total').text(total.toFixed(2));
+        document.getElementById('total-compra').textContent = '$' + total.toFixed(2);
     }
 
-    // Guardar nuevo producto desde el modal y agregarlo a la tabla
-    $('#formNuevoProducto').on('submit', function(e) {
+    function actualizarIndices() {
+        document.querySelectorAll('#productos-body tr').forEach((fila, index) => {
+            fila.querySelector('.producto-id').setAttribute('name', `productos[${index}][id]`);
+            fila.querySelector('.cantidad').setAttribute('name', `productos[${index}][cantidad]`);
+            fila.querySelector('.precio').setAttribute('name', `productos[${index}][precio_compra]`);
+        });
+    }
+
+    function nuevaFila() {
+        const tbody = document.getElementById('productos-body');
+        const fila = document.createElement('tr');
+        fila.classList.add('fila-producto');
+        fila.innerHTML = `
+            <td style="position: relative;">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control form-control-sm producto-buscar" placeholder="Buscar producto...">
+                    <button type="button" class="btn btn-success btn-sm btn-nuevo-producto">+</button>
+                </div>
+                <input type="hidden" name="" class="producto-id">
+                <div class="resultados position-absolute bg-white border w-100"></div>
+            </td>
+            <td><input type="number" name="" class="form-control form-control-sm cantidad" min="1" value="1"></td>
+            <td><input type="number" name="" class="form-control form-control-sm precio" step="0.01" value="0"></td>
+            <td class="subtotal">$0.00</td>
+            <td><button type="button" class="btn btn-danger btn-sm eliminar-fila">Eliminar</button></td>
+        `;
+        tbody.appendChild(fila);
+        attachEvents(fila);
+        actualizarIndices();
+    }
+
+    function attachEvents(fila) {
+        const cantidad = fila.querySelector('.cantidad');
+        const precio = fila.querySelector('.precio');
+        const eliminar = fila.querySelector('.eliminar-fila');
+        const inputProd = fila.querySelector('.producto-buscar');
+        const inputId = fila.querySelector('.producto-id');
+        const btnNuevo = fila.querySelector('.btn-nuevo-producto');
+
+        cantidad.addEventListener('input', actualizarTotales);
+        precio.addEventListener('input', actualizarTotales);
+        eliminar.addEventListener('click', () => {
+            fila.remove();
+            actualizarTotales();
+            actualizarIndices();
+        });
+
+        inputProd.addEventListener('keyup', function(e) {
+    const resultados = fila.querySelector('.resultados');
+    if(this.value.length < 2) { 
+        resultados.innerHTML = ''; 
+        resultados.style.display = 'none';
+        return; 
+    }
+
+    fetch(`/productos/buscar?term=${this.value}`)
+        .then(res => res.json())
+        .then(data => {
+            resultados.innerHTML = '';
+            if(data.length === 0){
+                resultados.style.display = 'none';
+                return;
+            }
+            data.forEach(p => {
+                const div = document.createElement('div');
+                div.textContent = p.nombre;
+                div.addEventListener('click', function() {
+                    inputProd.value = p.nombre;
+                    fila.querySelector('.precio').value = p.precio_compra ?? 0;
+                    fila.querySelector('.producto-id').value = p.id;
+                    resultados.innerHTML = '';
+                    resultados.style.display = 'none';
+                    actualizarTotales();
+
+                    if (!document.querySelectorAll('#productos-body tr .producto-id[value=""]').length) {
+                        nuevaFila();
+                    }
+                    actualizarIndices();
+                });
+                resultados.appendChild(div);
+            });
+            resultados.style.display = 'block';
+        });
+});
+
+// cerrar dropdown si se hace click afuera
+document.addEventListener('click', function(e) {
+    if(!fila.contains(e.target)) {
+        fila.querySelector('.resultados').style.display = 'none';
+    }
+});
+
+
+        btnNuevo.addEventListener('click', function() {
+            filaActual = fila;
+            const modal = new bootstrap.Modal(document.getElementById('modalNuevoProducto'));
+            modal.show();
+        });
+    }
+
+    document.querySelectorAll('#productos-body tr').forEach(fila => attachEvents(fila));
+
+// Guardar nuevo producto desde el modal
+document.getElementById('formNuevoProducto').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    let formData = new FormData(this); // Captura todos los campos, incluso imagen
+    const formData = new FormData(this);
+    const modalElement = document.getElementById('modalNuevoProducto');
+    const modal = bootstrap.Modal.getInstance(modalElement);
 
-    $.ajax({
-        url: "{{ route('productos.store') }}",
-        method: "POST",
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(producto) {
-            // Agregar nuevo producto al select
-            $('#producto_id').append(
-                `<option value="${producto.id}" selected>${producto.nombre}</option>`
-            );
-            $('#modalNuevoProducto').modal('hide');
-            $('#formNuevoProducto')[0].reset();
-        },
-        error: function(xhr) {
-            console.error(xhr.responseText);
-            alert("Error al guardar el producto");
+    try {
+        const res = await fetch("{{ route('productos.store') }}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('input[name=_token]').value,
+                "Accept": "application/json" // clave para que Laravel devuelva JSON
+            }
+        });
+
+        if (!res.ok) {
+            // Si Laravel devuelve errores de validación
+            const errorData = await res.json();
+            const mensajes = Object.values(errorData.errors).flat();
+            alert("Errores:\n" + mensajes.join("\n"));
+            return;
+        }
+
+        const data = await res.json();
+
+        // Cerrar modal y resetear formulario
+        modal.hide();
+        this.reset();
+
+        if (filaActual) {
+            filaActual.querySelector('.producto-buscar').value = data.producto.nombre;
+            filaActual.querySelector('.precio').value = data.producto.precio_compra ?? 0;
+            filaActual.querySelector('.producto-id').value = data.producto.id;
+
+            // Crear nueva fila si no hay filas vacías
+            if (!document.querySelectorAll('#productos-body tr .producto-id[value=""]').length) {
+                nuevaFila();
+            }
+
+            actualizarTotales();
+            actualizarIndices();
+        }
+
+    } catch (err) {
+        console.error("Error en fetch:", err);
+        alert("Error al guardar el producto. Revisa la consola para más detalles.");
+    }
+});
+
+
+    // Prevención de envío si no hay productos
+    formCompra.addEventListener('submit', function(e) {
+        btnGuardar.disabled = true;
+
+        document.querySelectorAll('#productos-body tr').forEach(fila => {
+            const prodId = fila.querySelector('.producto-id').value;
+            if (!prodId) fila.remove();
+        });
+
+        if (!document.querySelectorAll('#productos-body tr .producto-id').length) {
+            e.preventDefault();
+            btnGuardar.disabled = false;
+            alert('Debe seleccionar al menos un producto');
+            return false;
         }
     });
-});
 
 });
+
 </script>
 @endpush
+@endsection
+

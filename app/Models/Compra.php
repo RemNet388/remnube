@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Compra extends Model
 {
     protected $fillable = [
-        'proveedor_id', 'fecha', 'total', 'forma_pago_id'
+        'proveedor_id', 'fecha', 'total', 'forma_pago_id','caja_id','numero_comprobante'
     ];
 
     public function proveedor()

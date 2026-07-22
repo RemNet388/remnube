@@ -1,16 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between mb-3">
-    <h2>Categorías</h2>
-    <a href="{{ route('categorias.create') }}" class="btn btn-primary">Nueva Categoría</a>
-</div>
 
 @if(session('success'))
 <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<table class="table table-sm table-bordered table-striped align-middle">
+<div class="mb-3">
+    <h2 class="text-uppercase fw-bold" style="font-family: 'Roboto', sans-serif; font-size: 16px;">
+        Categorías
+    </h2>
+</div>
+
+<table class="table table-sm table-bordered table-striped align-middle" 
+       style="font-family: 'Roboto', sans-serif; font-size: 13px;">
     <thead class="table-light">
         <tr>
             <th>Nombre</th>
@@ -23,11 +26,17 @@
         <tr>
             <td>{{ $categoria->nombre }}</td>
             <td>{{ $categoria->descripcion }}</td>
-            <td>
-                <a href="{{ route('categorias.edit', $categoria) }}" class="btn btn-warning btn-sm">Editar</a>
+            <td class="d-flex gap-1">
+                <a href="{{ route('categorias.edit', $categoria) }}" 
+                   class="btn btn-warning btn-sm rounded-0">
+                   Editar
+                </a>
                 <form action="{{ route('categorias.destroy', $categoria) }}" method="POST" class="d-inline">
                     @csrf @method('DELETE')
-                    <button class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar categoría?')">Eliminar</button>
+                    <button class="btn btn-danger btn-sm rounded-0" 
+                            onclick="return confirm('¿Eliminar categoría?')">
+                        Eliminar
+                    </button>
                 </form>
             </td>
         </tr>
@@ -35,3 +44,17 @@
     </tbody>
 </table>
 @endsection
+
+@push('submenu')
+<a href="{{ route('categorias.create') }}" 
+   class="btn btn-primary btn-sm rounded-0" 
+   style="min-width: 130px; padding: 0.35rem 0.75rem;">
+    <i class="bi bi-plus"></i> Nueva Categoría
+</a>
+
+<a href="{{ route('productos.index') }}" 
+   class="btn btn-primary btn-sm rounded-0 ms-3" 
+   style="min-width: 110px; padding: 0.35rem 0.75rem;">
+    <i class="bi bi-plus-circle"></i> Productos
+</a>
+@endpush

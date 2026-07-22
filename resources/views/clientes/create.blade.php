@@ -1,35 +1,38 @@
 @extends('layouts.app')
 
 @section('content')
-<h2>Nuevo Cliente</h2>
+<div class="container mt-3">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3 text-muted">➕ Nuevo Cliente</h5>
+            
+            <form method="POST" action="{{ route('clientes.store') }}">
+                @csrf
+                <div class="mb-2">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control form-control-sm" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">DNI</label>
+                    <input type="text" name="dni" class="form-control form-control-sm">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" name="direccion" class="form-control form-control-sm">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" name="telefono" class="form-control form-control-sm">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control form-control-sm">
+                </div>
 
-@if($errors->any())
-<div class="alert alert-danger">
-    <ul>
-        @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
-    </ul>
+                <button type="submit" class="btn btn-primary btn-sm">💾 Guardar</button>
+                <a href="{{ route('clientes.index') }}" class="btn btn-secondary btn-sm">↩ Volver</a>
+            </form>
+        </div>
+    </div>
 </div>
-@endif
-
-<form action="{{ route('clientes.store') }}" method="POST">
-    @csrf
-    <div class="mb-3">
-        <label>Nombre</label>
-        <input type="text" name="nombre" class="form-control form-control-sm" required>
-    </div>
-    <div class="mb-3">
-        <label>Email</label>
-        <input type="email" name="email" class="form-control form-control-sm">
-    </div>
-    <div class="mb-3">
-        <label>Teléfono</label>
-        <input type="text" name="telefono" class="form-control form-control-sm">
-    </div>
-    <div class="mb-3">
-        <label>Dirección</label>
-        <input type="text" name="direccion" class="form-control form-control-sm">
-    </div>
-    <button class="btn btn-success">Guardar</button>
-    <a href="{{ route('clientes.index') }}" class="btn btn-secondary">Cancelar</a>
-</form>
 @endsection

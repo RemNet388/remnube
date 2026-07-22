@@ -1,0 +1,8 @@
+mysql -u root -p
+
+CREATE DATABASE laschicas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'laschicas'@'localhost' IDENTIFIED BY 'gooNet560';
+GRANT ALL PRIVILEGES ON laschicas.* TO 'laschicas'@'localhost';
+FLUSH PRIVILEGES;
+

@@ -8,11 +8,10 @@ use Illuminate\Http\Request;
 class FormaPagoController extends Controller
 {
     public function index()
-{
-    $formas_pago = FormaPago::all();
-    return view('formas_pago.index', compact('formas_pago'));
-}
-
+    {
+        $formas_pago = FormaPago::all();
+        return view('formas_pago.index', compact('formas_pago'));
+    }
 
     public function create()
     {
@@ -30,25 +29,30 @@ class FormaPagoController extends Controller
         return redirect()->route('formas_pago.index')->with('success', 'Forma de pago creada correctamente');
     }
 
-    public function edit(FormaPago $formasPago)
+    public function edit(FormaPago $forma_pago)
     {
-        return view('formas_pago.edit', compact('formasPago'));
+        return view('formas_pago.edit', compact('forma_pago'));
     }
 
-    public function update(Request $request, FormaPago $formasPago)
+    public function update(Request $request, FormaPago $forma_pago)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
         ]);
 
-        $formasPago->update($request->all());
+        $forma_pago->update([
+        'nombre' => $request->nombre,
+        'descripcion' => $request->descripcion,
+        'activo' => $request->has('activo') ? 1 : 0,
+    ]);
+    
         return redirect()->route('formas_pago.index')->with('success', 'Forma de pago actualizada correctamente');
     }
 
-    public function destroy(FormaPago $formasPago)
+    public function destroy(FormaPago $forma_pago)
     {
-        $formasPago->delete();
+        $forma_pago->delete();
         return redirect()->route('formas_pago.index')->with('success', 'Forma de pago eliminada correctamente');
     }
 }

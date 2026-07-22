@@ -2,9 +2,11 @@
 
 @section('content')
 <div class="container">
-    <h1>Editar Proveedor</h1>
+    <h2 class="text-uppercase fw-bold mb-4" style="font-family: 'Roboto', sans-serif; font-size: 16px;">
+        Editar Proveedor
+    </h2>
 
-    <form action="{{ route('proveedores.update', $proveedor) }}" method="POST">
+    <form action="{{ route('proveedores.update', $proveedor) }}" method="POST" style="font-family: 'Roboto', sans-serif; font-size: 13px;">
         @csrf
         @method('PUT')
 
@@ -30,8 +32,14 @@
             @error('email') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
-        <button type="submit" class="btn btn-success">Actualizar</button>
-        <a href="{{ route('proveedores.index') }}" class="btn btn-secondary">Cancelar</a>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success btn-sm" style="border-radius: 0; font-family: 'Roboto', sans-serif;">
+                <i class="fa fa-save me-1"></i> Actualizar
+            </button>
+            <a href="{{ route('proveedores.index') }}" class="btn btn-secondary btn-sm" style="border-radius: 0; font-family: 'Roboto', sans-serif;">
+                <i class="fa fa-times me-1"></i> Cancelar
+            </a>
+        </div>
     </form>
 </div>
 @endsection

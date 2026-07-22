@@ -9,7 +9,7 @@ class FormaPago extends Model
     protected $table = 'formas_pago';
 
     protected $fillable = [
-        'nombre', 'descripcion'
+        'nombre', 'descripcion', 'activo'
     ];
 
     public function ventas()
@@ -21,4 +21,8 @@ class FormaPago extends Model
     {
         return $this->hasMany(Compra::class);
     }
+    public function scopeActivas($query)
+{
+    return $query->where('activo', 1);
+}
 }

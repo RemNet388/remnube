@@ -1,0 +1,59 @@
+    /* CATEGORÍAS NAV */
+    .categorias-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+
+    .categorias-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .categoria-link {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        padding: 0.4rem 0.6rem;
+        color: #333 !important;
+    }
+
+    .categoria-link:hover {
+        color: #000 !important;
+        text-decoration: underline;
+    }
+
+    /* SLIDER PRODUCTOS */
+    .slider-productos {
+        white-space: nowrap;
+        scrollbar-width: none;
+        padding-bottom: 5px;
+    }
+
+    .slider-productos::-webkit-scrollbar {
+        display: none;
+    }
+
+    .slider-card {
+        min-width: 220px;
+        max-width: 220px;
+        border: none;
+    }
+
+    .slider-card img {
+        height: 180px;
+        object-fit: cover;
+    }
+.hero-home {
+    min-height: 70vh;
+    background-image: url("{{ asset('images/ropa-oversize.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.hero-home .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+}

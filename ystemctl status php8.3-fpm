@@ -1,0 +1,16 @@
+[0;1;32m●[0m php8.3-fpm.service - The PHP 8.3 FastCGI Process Manager
+     Loaded: loaded (/lib/systemd/system/php8.3-fpm.service; enabled; vendor preset: enabled)
+     Active: [0;1;32mactive (running)[0m since Mon 2025-08-11 09:55:59 -03; 1h 56min ago
+       Docs: man:php-fpm8.3(8)
+   Main PID: 561 (php-fpm8.3)
+     Status: "Processes active: 0, idle: 2, Requests: 300, slow: 0, Traffic: 0.00req/sec"
+      Tasks: 3 (limit: 1050)
+     Memory: 28.3M
+        CPU: 362ms
+     CGroup: /system.slice/php8.3-fpm.service
+             ├─561 "php-fpm: master process (/etc/php/8.3/fpm/php-fpm.conf)" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
+             ├─690 "php-fpm: pool www" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
+             └─691 "php-fpm: pool www" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
+
+Aug 11 09:55:56 vps-5222877-x systemd[1]: Starting The PHP 8.3 FastCGI Process Manager...
+Aug 11 09:55:59 vps-5222877-x systemd[1]: Started The PHP 8.3 FastCGI Process Manager.

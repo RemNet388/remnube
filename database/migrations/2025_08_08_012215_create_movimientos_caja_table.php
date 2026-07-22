@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('movimientos_caja', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('caja_id')->constrained('caja_diaria')->onDelete('cascade');
+            $table->foreignId('caja_id')->constrained('cajas')->onDelete('cascade');
             $table->enum('tipo', ['ingreso', 'egreso']);
             $table->string('concepto');
             $table->decimal('monto', 10, 2);

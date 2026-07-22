@@ -16,3 +16,17 @@
 .table td, .table th {
     vertical-align: middle;
 }
+#resultados li.active {
+    background-color: #0d6efd;
+    color: white;
+}
+.table-container {
+    background-color: #f4f4f4;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #ddd,
+        #ddd 1px,
+        #f4f4f4 1px,
+        #f4f4f4 10px
+    );
+}

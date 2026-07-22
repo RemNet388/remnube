@@ -19,4 +19,11 @@ class DetalleCompra extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+        /**
+     * Acceso rápido al proveedor a través de la compra
+     */
+    public function proveedor()
+    {
+        return $this->compra->proveedor();
+    }
 }
